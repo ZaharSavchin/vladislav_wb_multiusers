@@ -23,8 +23,9 @@ async def monitoring(procent):
                         name = item_details.get('name', None)
 
                         if qty == 0:
-                            users_items[user_id][1][item_id] = 0
+                            users_items[user_id][1][int(item_id)] = 0
                             await save_users_items()
+                            continue
 
                         if price - actual_price >= price * procent * 0.01:
                             sale = price - actual_price
@@ -34,7 +35,7 @@ async def monitoring(procent):
                                                                              f" снизилась на {round(sale, 2)} "
                                                                              f"{list_of_items[0]}")
 
-                                    await main_search(list_of_items[0], item_id, id_, item_details=item_details)
+                                    await main_search(list_of_items[0], int(item_id), id_, item_details=item_details)
                                 except Exception as err:
                                     print(err)
 

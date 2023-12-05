@@ -5,7 +5,7 @@ import aiogram
 from aiogram import Router, F
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, FSInputFile
 from services.price_monitor import monitoring
-from database.database import users_db, users_items, users_max_items, url_images
+from database.database import users_db, users_items, users_max_items, url_images, save_users_items
 from aiogram.filters.callback_data import CallbackData
 from config_data.config import admin_id
 from handlers.currency_handlers import bot
@@ -182,3 +182,14 @@ async def save_db(message: Message):
         await message.answer_document(file_1)
         # await message.answer_document(file_2)
         # await message.answer_document(file_3)
+
+
+# @router.message(F.text == 'testprices')
+# async def shake(message: Message):
+#     # users_items[message.from_user.id][1]["146894363"] = 0.0
+#     # users_items[message.from_user.id][1]["146894368"] = 0.0
+#     # users_items[message.from_user.id][1]["144810560"] = 0.0
+#     # users_items[message.from_user.id][1]["183887161"] = 4920
+#     users_items[message.from_user.id][1][159944373] = 0
+#     users_items[message.from_user.id][1][150249483] = 10080
+#     await save_users_items()

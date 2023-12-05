@@ -13,7 +13,10 @@ async def main():
     bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
     dp = Dispatcher()
 
-    await bot.send_message(chat_id=admin_id, text="бот WB перезапущен")
+    try:
+        await bot.send_message(chat_id=admin_id, text="бот WB перезапущен")
+    except Exception:
+        print('bot started')
 
     await set_main_menu(bot)
 

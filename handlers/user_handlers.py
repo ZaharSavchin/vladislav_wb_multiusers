@@ -58,8 +58,8 @@ async def process_start_command(message: Message):
         await message.answer(LEXICON["/start"])
         if message.from_user.id == admin_id:
             await message.answer('Выберите необходимую валюту для цен товара', reply_markup=create_currency_keyboard(*LEXICON_CURRENCY.keys()))
-            await save_users_db()
-            await save_users_items()
+        await save_users_db()
+        await save_users_items()
 
 
 # @router.message(Command(commands='help'))
@@ -159,7 +159,7 @@ async def add_many_items_process(message: Message):
                     print(f'{art} = {price}, {qty}')
                     if qty == 0:
                         price = 0
-                    users_items[message.from_user.id][1][art] = int(price)
+                    users_items[message.from_user.id][1][int(art)] = int(price)
                     counter += 1
                     await save_users_items()
                 except Exception as err:

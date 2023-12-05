@@ -4,7 +4,7 @@ import requests
 from aiogram import Bot
 from aiogram.enums import ParseMode
 
-from config_data.config import Config, load_config
+from config_data.config import Config, load_config, admin_id
 from database.database import url_images, save_url_images, users_items, save_users_items
 import aiohttp
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -129,8 +129,9 @@ async def main_search(currency: str, item_id: int, user_id: int, item_details=No
     #                 await save_url_images()
     image_url = url_images[item_id]
     price_int = float(item_details.get('salePriceU', None) / 100) if item_details.get('salePriceU', None) is not None else None
-    users_items[user_id][1][item_id] = price_int
-    await save_users_items()
+    if user_id == admin_id:
+        users_items[user_id][1][item_id] = price_int
+        await save_users_items()
 
     name = item_details.get('name', None)
     button = InlineKeyboardButton(text=f"Удалить: '{name}'",
@@ -141,12 +142,17 @@ async def main_search(currency: str, item_id: int, user_id: int, item_details=No
     # message_with_image = f'{message}\n<a href="{image_url}">&#8203;</a>'
     # await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML, reply_markup=markup)
     try:
-        await bot.send_photo(chat_id=user_id, photo=image_url, caption=message, reply_markup=markup)
+        if user_id == admin_id:
+            await bot.send_photo(chat_id=user_id, photo=image_url, caption=message, reply_markup=markup)
+        else:
+            await bot.send_photo(chat_id=user_id, photo=image_url, caption=message)
     except Exception as err:
         print(err)
         message_with_image = f'{message}\n<a href="{image_url}">&#8203;</a>'
-        await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML, reply_markup=markup)
-
+        if user_id == admin_id:
+            await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML, reply_markup=markup)
+        else:
+            await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML)
     # else:
     #     await bot.send_message(chat_id=user_id, text=message, reply_markup=markup)
 
