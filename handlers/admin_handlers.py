@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 
 import aiogram
 from aiogram import Router, F
@@ -9,6 +10,8 @@ from database.database import users_db, users_items, users_max_items, url_images
 from aiogram.filters.callback_data import CallbackData
 from config_data.config import admin_id
 from handlers.currency_handlers import bot
+
+from openpyxl import Workbook
 
 
 router = Router()
@@ -157,39 +160,72 @@ async def send_ads(message: Message):
         await bot.send_message(chat_id=admin_id, text=f'{counter} сообщений доставлено')
 
 
+def save_dict_to_xlsx(dictionary, filename):
+    workbook = Workbook()
+    sheet = workbook.active
+
+    keys = list(dictionary.keys())
+    for i in range(len(keys)):
+        sheet.cell(row=i+1, column=1).value = keys[i]
+
+    values = list(dictionary.values())
+    for i in range(len(values)):
+        sheet.cell(row=i+1, column=2).value = values[i]
+
+    workbook.save(filename)
+
+
 @router.message(F.text == 'bot save db')
 async def save_db(message: Message):
 
     # if message.from_user.id == admin_id:
+        save_dict_to_xlsx(users_items[admin_id][1], 'wldb.xlsx')
 
-        with open('users_db.json', 'w', encoding='utf-8-sig') as fl:
-            json.dump(users_db, fl, indent=4, ensure_ascii=False)
+        # with open('users_db.json', 'w', encoding='utf-8-sig') as fl:
+        #     json.dump(users_db, fl, indent=4, ensure_ascii=False)
+        #
+        # with open('users_items.json', 'w', encoding='utf-8-sig') as fl:
+        #     json.dump(users_items, fl, indent=4, ensure_ascii=False)
+        #
+        # with open('users_max_items.json', 'w', encoding='utf-8-sig') as fl:
+        #     json.dump(users_max_items, fl, indent=4, ensure_ascii=False)
+        #
+        # with open('url_images.json', 'w', encoding='utf-8-sig') as fl:
+        #     json.dump(url_images, fl, indent=4, ensure_ascii=False)
 
-        with open('users_items.json', 'w', encoding='utf-8-sig') as fl:
-            json.dump(users_items, fl, indent=4, ensure_ascii=False)
-
-        with open('users_max_items.json', 'w', encoding='utf-8-sig') as fl:
-            json.dump(users_max_items, fl, indent=4, ensure_ascii=False)
-
-        with open('url_images.json', 'w', encoding='utf-8-sig') as fl:
-            json.dump(url_images, fl, indent=4, ensure_ascii=False)
-
-        file = FSInputFile('users_db.json')
-        file_1 = FSInputFile('users_items.json')
-        file_2 = FSInputFile('users_max_items.json')
-        file_3 = FSInputFile('url_images.json')
+        # file = FSInputFile('users_db.json')
+        # file_1 = FSInputFile('users_items.json')
+        file_11 = FSInputFile('wldb.xlsx')
+        # file_2 = FSInputFile('users_max_items.json')
+        # file_3 = FSInputFile('url_images.json')
         # await message.answer_document(file)
-        await message.answer_document(file_1)
+        # await message.answer_document(file_1)
+        await message.answer_document(file_11)
         # await message.answer_document(file_2)
         # await message.answer_document(file_3)
 
 
-# @router.message(F.text == 'testprices')
-# async def shake(message: Message):
-#     # users_items[message.from_user.id][1]["146894363"] = 0.0
-#     # users_items[message.from_user.id][1]["146894368"] = 0.0
-#     # users_items[message.from_user.id][1]["144810560"] = 0.0
-#     # users_items[message.from_user.id][1]["183887161"] = 4920
-#     users_items[message.from_user.id][1][159944373] = 0
-#     users_items[message.from_user.id][1][150249483] = 10080
-#     await save_users_items()
+@router.message(F.text == 'testprices')
+async def shake(message: Message):
+    # users_items[message.from_user.id][1]["146894363"] = 0.0
+    # users_items[message.from_user.id][1]["146894368"] = 0.0
+    # users_items[message.from_user.id][1]["144810560"] = 0.0
+    # users_items[message.from_user.id][1]["183887161"] = 4920
+    users_items[message.from_user.id][1][159944373] = 0
+    users_items[message.from_user.id][1][150249483] = 10080
+    await save_users_items()
+
+@router.message(F.text.startswith('delete items'))
+async def count_cur(message: Message):
+    user_id = message.from_user.id
+    if user_id == admin_id:
+        counter = 0
+        list_items = message.text.split('\n')
+        for item in list_items:
+            if re.match(r'^\s*\d+\s*$', item):
+                if int(item.strip()) in users_items[admin_id][1]:
+                    del users_items[admin_id][1][int(item.strip())]
+                    counter += 1
+        await message.answer(f'{counter} товаров удалено')
+
+

@@ -17,8 +17,9 @@ bot = Bot(token=BOT_TOKEN, parse_mode='HTML')
 
 
 async def get_item(currency, item_id):
-    url_2 = f'https://card.wb.ru/cards/detail?appType=128&curr={currency}&locale=by&lang=ru&dest=-59208&regions=1,4,22,30,31,33,40,48,66,68,69,70,80,83,114,115&reg=1&spp=0&nm={item_id}'
-    url_1 = f'https://card.wb.ru/cards/detail?appType=128&curr={currency}&locale=ru&lang=ru&dest=123585494&regions=1,4,22,30,31,33,38,40,48,64,66,68,69,70,80,83,110,114&reg=1&spp=0&nm={item_id}'
+    url_3 = f'https://card.wb.ru/cards/detail?appType=128&curr={currency}&locale=by&lang=ru&dest=-59208&regions=1,4,22,30,31,33,40,48,66,68,69,70,80,83,114,115&reg=1&spp=0&nm={item_id}'
+    url_2 = f'https://card.wb.ru/cards/detail?appType=128&curr={currency}&locale=ru&lang=ru&dest=123585494&regions=1,4,22,30,31,33,38,40,48,64,66,68,69,70,80,83,110,114&reg=1&spp=0&nm={item_id}'
+    url_1 = f'https://card.wb.ru/cards/v1/detail?appType=1&curr={currency}&dest=-1257786&spp=27&nm={item_id}'
     headers = {
         'Accept': '*/*',
         'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
