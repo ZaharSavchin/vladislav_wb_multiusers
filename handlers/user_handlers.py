@@ -77,28 +77,24 @@ async def process_start_command(message: Message):
 #     await message.answer(LEXICON["/help"])
 
 
-# @router.message(Command(commands='list'))
-# async def get_list_of_items(message: Message):
-#     if message.from_user.id not in users_max_items:
-#         users_max_items[message.from_user.id] = 1
-#         await save_users_max_items()
-#     user_id = message.from_user.id
-#     if user_id not in users_items or len(users_items[user_id][1]) == 0:
-#         await message.answer(text="У вас нет отслеживаемых товаров!\n"
-#                                   "Отправьте боту артикул товара, цену которого хотите отслеживать.")
-#     else:
-#         items = users_items.copy()[user_id][1:]
-#         cur = users_items.copy()[user_id][0]
-#         keys = []
-#         for dictionary in items:
-#             keys.extend(int(key) for key in dictionary.keys())
-#         for i in keys.copy():
-#             await main_search(cur, i, user_id)
-#     max_itms = users_max_items[user_id]
-#     used_itms = len(users_items[user_id][1])
-#     await message.answer(f'Всего слотов: {max_itms}\n'
-#                          f'Слотов занято: {used_itms}\n'
-#                          f'Слотов свободно: {max_itms - used_itms}')
+@router.message(Command(commands='list'))
+async def get_list_of_items(message: Message):
+    if message.from_user.id not in users_max_items:
+        users_max_items[message.from_user.id] = 1
+        await save_users_max_items()
+    user_id = message.from_user.id
+    if user_id not in users_items or len(users_items[user_id][1]) == 0:
+        await message.answer(text="У вас нет отслеживаемых товаров!\n"
+                                  "Отправьте боту артикул товара, цену которого хотите отслеживать.")
+    else:
+        items = users_items.copy()[user_id][1:]
+        cur = users_items.copy()[user_id][0]
+        keys = []
+        for dictionary in items:
+            keys.extend(int(key) for key in dictionary.keys())
+        for i in keys.copy():
+            await main_search(cur, i, user_id)
+
 
 
 @router.message(F.text == 'my id')

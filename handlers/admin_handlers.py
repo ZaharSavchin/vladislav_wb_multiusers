@@ -6,7 +6,7 @@ import aiogram
 from aiogram import Router, F
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, FSInputFile
 from services.price_monitor import monitoring
-from database.database import users_db, users_items, users_max_items, url_images, save_users_items
+from database.database import users_db, users_items, users_max_items, url_images, save_users_items, save_users_db
 from aiogram.filters.callback_data import CallbackData
 from config_data.config import admin_id
 from handlers.currency_handlers import bot
@@ -32,20 +32,20 @@ async def stat_message(message: Message):
             for i in users_db.copy():
                 name = users_db[i][0]
                 username = users_db[i][1]
-                refs = users_max_items[i]
+                # refs = users_max_items[i]
                 if i in users_items:
                     cur = users_items[i][0]
                     country[cur] += 1
                     items = users_items[i][1:]
                     if message.from_user.id == admin_id:
-                        answer.append(f"{counter}){name}(@{username}, {i}, {refs}): {cur}, {items}✅\n")
+                        answer.append(f"{counter}){name}(@{username}, {i}): {cur}, {items}✅\n")
                     else:
                         answer.append(f"{counter}){name}, @{username}: {cur}\n")
 
                     counter += 1
                 else:
                     if message.from_user.id == admin_id:
-                        answer.append(f"{counter}){name}(@{username}, {i}, {refs})🤷\n")
+                        answer.append(f"{counter}){name}(@{username}, {i})🤷\n")
                     else:
                         answer.append(f"{counter}){name}, @{username}\n")
                     counter += 1

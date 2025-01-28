@@ -1,3 +1,5 @@
+import asyncio
+
 import redis
 import json
 
@@ -6,7 +8,6 @@ users_db = {}
 #             6031519620: ["тех поддержка бота 'Енот на куфаре'", 'help_enot_kufar']}
 
 users_items = {}
-
 # users_items = {
 #     "6031519620": [
 #         "rub",
@@ -138,3 +139,5 @@ async def save_users_max_items():
 
 async def save_commercial_dict():
     r.set('commercial_dict', json.dumps(commercial_dict))
+
+

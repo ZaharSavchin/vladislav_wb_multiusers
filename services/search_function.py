@@ -24,8 +24,8 @@ async def get_item(currency, item_id):
         'Accept': '*/*',
         'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
         'Connection': 'keep-alive',
-        'Origin': 'https://www.wildberries.by',
-        'Referer': 'https://www.wildberries.by/',
+        'Origin': 'https://www.wildberries.ru',
+        'Referer': 'https://www.wildberries.ru/',
         'Sec-Fetch-Dest': 'empty',
         'Sec-Fetch-Mode': 'cors',
         'Sec-Fetch-Site': 'cross-site',
@@ -115,10 +115,10 @@ async def main_search(currency: str, item_id: int, user_id: int, item_details=No
         return None
     image_url = None  # Initialize with None
 
-    if item_id not in url_images:
-        image_url = await search_image(item_id)
-        url_images[item_id] = image_url
-        await save_url_images()
+    # if item_id not in url_images:
+    #     image_url = await search_image(item_id)
+    #     url_images[item_id] = image_url
+    #     await save_url_images()
     # elif item_id in url_images:
     #     async with aiohttp.ClientSession() as session:
     #         async with session.get(url_images[item_id]) as response:
@@ -128,11 +128,11 @@ async def main_search(currency: str, item_id: int, user_id: int, item_details=No
     #                 image_url = await search_image(item_id)
     #                 url_images[item_id] = image_url
     #                 await save_url_images()
-    image_url = url_images[item_id]
+    # image_url = url_images[item_id]
     price_int = float(item_details.get('salePriceU', None) / 100) if item_details.get('salePriceU', None) is not None else None
-    if user_id == admin_id:
-        users_items[user_id][1][item_id] = price_int
-        await save_users_items()
+
+    users_items[user_id][1][item_id] = price_int
+    await save_users_items()
 
     name = item_details.get('name', None)
     button = InlineKeyboardButton(text=f"Удалить: '{name}'",
