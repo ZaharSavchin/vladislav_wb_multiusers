@@ -14,7 +14,7 @@ async def plus_press(callback: CallbackQuery,
     if change == '+':
         users_max_items[user_id] += 1
     if change == '-':
-        if users_max_items[user_id] > 1:
+        if users_max_items[user_id] > 0:
             users_max_items[user_id] -= 1
         if user_id in users_items and len(users_items[user_id][1]) > users_max_items[user_id]:
             my_dict = users_items[user_id][1]

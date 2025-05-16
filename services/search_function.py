@@ -50,7 +50,7 @@ async def prepare_item(currency, item_id, item_details):
         price = float(item_details.get('salePriceU', None) / 100) if item_details.get('salePriceU', None) is not None else None
         name = item_details.get('name', None)
         return (f"артикул: {item_details.get('id', None)}\n"                                                                                                 
-                f"брэнд: {item_details.get('brand', None)}\n"
+                f"бренд: {item_details.get('brand', None)}\n"
                 f"название: {name}\n"
                 f"цена: {price} {currency} (без учёта Вашей персональной скидки)\n"
                 f"рейтинг: {item_details.get('rating', '0')}⭐ ({item_details.get('feedbacks', '0')} отзывов)\n"
@@ -87,15 +87,18 @@ async def search_image(item_id: int):
             if len(str(item_id)) < 6:
                 image_url = f'https://basket-{basket}.wb.ru/vol0/part{str(item_id)[0:len(str(item_id)) - 3]}/{item_id}/images/big/1.jpg'
                 response = requests.get(image_url)
+                print(f'{basket} = {response.status_code}')
                 if response.status_code == 200:
                     return image_url
             else:
                 image_url = f'https://basket-{basket}.wb.ru/vol{str(item_id)[0:len(str(item_id)) - 5]}/part{str(item_id)[0:len(str(item_id)) - 3]}/{item_id}/images/big/1.jpg'
                 response = requests.get(image_url)
+                print(f'{basket} = {response.status_code}')
                 if response.status_code == 200:
                     return image_url
 
         except Exception as err:
+            # return 'https://basket-22.wbbasket.ru/vol3711/part371164/371164623/images/c246x328/1.webp'
             print(err)
 
 
@@ -130,7 +133,6 @@ async def main_search(currency: str, item_id: int, user_id: int, item_details=No
     #                 await save_url_images()
     # image_url = url_images[item_id]
     price_int = float(item_details.get('salePriceU', None) / 100) if item_details.get('salePriceU', None) is not None else None
-
     users_items[user_id][1][item_id] = price_int
     await save_users_items()
 
@@ -143,17 +145,56 @@ async def main_search(currency: str, item_id: int, user_id: int, item_details=No
     # message_with_image = f'{message}\n<a href="{image_url}">&#8203;</a>'
     # await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML, reply_markup=markup)
     try:
-        if user_id == admin_id:
-            await bot.send_photo(chat_id=user_id, photo=image_url, caption=message, reply_markup=markup)
-        else:
-            await bot.send_photo(chat_id=user_id, photo=image_url, caption=message)
+        # await bot.send_photo(chat_id=user_id, photo=image_url, caption=message, reply_markup=markup)
+        message_with_image = f'{message}\n<a href="{image_url}">&#8203;</a>'
+        await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML, reply_markup=markup)
     except Exception as err:
         print(err)
         message_with_image = f'{message}\n<a href="{image_url}">&#8203;</a>'
-        if user_id == admin_id:
-            await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML, reply_markup=markup)
-        else:
-            await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML)
+        await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML, reply_markup=markup)
+
     # else:
     #     await bot.send_message(chat_id=user_id, text=message, reply_markup=markup)
+
+    # if item_id not in url_images:
+    #     image_url = await search_image(item_id)
+    #     url_images[item_id] = image_url
+    #     await save_url_images()
+    # elif item_id in url_images:
+    #     async with aiohttp.ClientSession() as session:
+    #         async with session.get(url_images[item_id]) as response:
+    #             if response.status == 200:
+    #                 image_url = url_images[item_id]
+    #             else:
+    #                 image_url = await search_image(item_id)
+    #                 url_images[item_id] = image_url
+    #                 await save_url_images()
+    # image_url = url_images[item_id]
+    # price_int = float(item_details.get('salePriceU', None) / 100) if item_details.get('salePriceU', None) is not None else None
+    #
+    # users_items[user_id][1][item_id] = price_int
+    # await save_users_items()
+    #
+    # name = item_details.get('name', None)
+    # button = InlineKeyboardButton(text=f"Удалить: '{name}'",
+    #                               callback_data=DeleteCallbackFactory(user_id=user_id,
+    #                                                                   item_id=item_id).pack())
+    # markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
+    # # if image_url:
+    # # message_with_image = f'{message}\n<a href="{image_url}">&#8203;</a>'
+    # # await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML, reply_markup=markup)
+    # try:
+    #     if user_id == admin_id:
+    #         await bot.send_photo(chat_id=user_id, photo=image_url, caption=message, reply_markup=markup)
+    #     else:
+    #         await bot.send_photo(chat_id=user_id, photo=image_url, caption=message)
+    # except Exception as err:
+    #     print(err)
+    #     message_with_image = f'{message}\n<a href="{image_url}">&#8203;</a>'
+    #     if user_id == admin_id:
+    #         await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML, reply_markup=markup)
+    #     else:
+    #         await bot.send_message(chat_id=user_id, text=message_with_image, parse_mode=ParseMode.HTML)
+    # # else:
+    # #     await bot.send_message(chat_id=user_id, text=message, reply_markup=markup)
 

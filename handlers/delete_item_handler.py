@@ -19,9 +19,11 @@ async def delete_press(callback: CallbackQuery,
     if item_id in dict_of_items:
         del dict_of_items[item_id]
     try:
-        await callback.message.edit_caption(caption=f'товар удален из списка отслеживания (артикул: {item_id})')
+        await callback.answer(f'товар удален из списка отслеживания')
+        await callback.message.delete()
     except Exception:
         try:
+            await callback.message.delete()
             await callback.answer(
                 'что-то пошло не так, посмотри список отслеживаемых товаров и убедись что ненужный товар удалился.')
             await callback.message.delete()

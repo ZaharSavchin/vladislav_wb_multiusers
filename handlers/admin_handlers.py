@@ -22,8 +22,9 @@ async def stat_message(message: Message):
     if message.from_user.id ==admin_id:
         if message.text.endswith('start'):
             await message.answer('цикл запущен')
-            procent = int(message.text.split(' ')[2])
-            print(procent, type(procent))
+            # procent = int(message.text.split(' ')[2])
+            # print(procent, type(procent))
+            procent = 10
             await monitoring(procent)
         elif message.text.endswith("all"):
             answer = []
@@ -93,7 +94,7 @@ class MaxItemsCallbackFactory(CallbackData, prefix='max_items'):
     change: str
 
 
-@router.message(F.text.startswith('bot change max_items'))
+@router.message(F.text.startswith('change max_items'))
 async def change_max_items(message: Message):
     if message.from_user.id == admin_id:
         i = int(message.text.split()[-1])
@@ -114,7 +115,7 @@ async def change_max_items(message: Message):
         await message.answer(text=answer, reply_markup=markup)
 
 
-@router.message(F.text.startswith('bot cur'))
+@router.message(F.text.startswith('bot curens'))
 async def count_cur(message: Message):
     if message.from_user.id == admin_id:
         country = {'rub': 0, 'byn': 0, 'kzt': 0, 'kgs': 0, 'uzs': 0, 'usd': 0, 'amd': 0}
@@ -131,7 +132,7 @@ async def count_cur(message: Message):
         await message.answer(f'{country_message}')
 
 
-@router.message(F.text.startswith('bot send ads to users'))
+@router.message(F.text.startswith('send ads to users'))
 async def send_ads(message: Message):
     if message.from_user.id == admin_id:
         photo_url = 'none'

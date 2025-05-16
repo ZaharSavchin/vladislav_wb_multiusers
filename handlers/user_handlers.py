@@ -9,7 +9,7 @@ from lexicon.lexicon import LEXICON, LEXICON_CURRENCY
 from services.search_function import main_search, get_name
 from keyboards.currency_kb import create_currency_keyboard
 
-from config_data.config import Config, load_config, admin_id
+from config_data.config import Config, load_config, admin_id, chat_id
 from aiogram import Bot
 
 from services.search_function import get_price, get_qty
@@ -31,8 +31,11 @@ async def new_user(message):
     mes = f'{message.from_user.full_name}, @{message.from_user.username} присоединился'
     if "<" in mes or ">" in mes:
         mes = mes.replace(">", "&gt;").replace("<", "&lt;")
-    await bot.send_message(chat_id=admin_id,
-                           text=mes)
+    try:
+        await bot.send_message(chat_id=admin_id,
+                               text=mes)
+    except Exception as err:
+        print(err)
 
 
 @router.message(CommandStart())
@@ -46,7 +49,7 @@ async def process_start_command(message: Message):
                                                              f"Теперь у Вас максимальное количество отслеживаемых товаров: "
                                                              f"{users_max_items[int(ref_id)]}")
         if message.from_user.id not in users_max_items:
-            users_max_items[message.from_user.id] = 1
+            users_max_items[message.from_user.id] = 10
             await save_users_max_items()
         if message.from_user.id not in users_db:
             await new_user(message)
@@ -56,31 +59,35 @@ async def process_start_command(message: Message):
         users_db[message.from_user.id] = [name, message.from_user.username]
         users_items[message.from_user.id] = ['rub', {}]
         await message.answer(LEXICON["/start"])
-        if message.from_user.id == admin_id:
-            await message.answer('Выберите необходимую валюту для цен товара', reply_markup=create_currency_keyboard(*LEXICON_CURRENCY.keys()))
+
+        await message.answer('Выберите необходимую валюту для цен товара', reply_markup=create_currency_keyboard(*LEXICON_CURRENCY.keys()))
         await save_users_db()
         await save_users_items()
 
 
-# @router.message(Command(commands='help'))
-# async def process_help_command(message: Message):
-#     if message.from_user.id not in users_max_items:
-#         users_max_items[message.from_user.id] = 1
-#         await save_users_max_items()
-#     await save_users_max_items()
-#     if message.from_user.id not in users_db:
-#         await new_user(message)
-#     name = message.from_user.full_name
-#     if "<" in name or ">" in name:
-#         name = name.replace(">", "&gt;").replace("<", "&lt;")
-#     users_db[message.from_user.id] = [name, message.from_user.username]
-#     await message.answer(LEXICON["/help"])
+@router.message(Command(commands='help'))
+async def process_help_command(message: Message):
+    if message.from_user.id not in users_max_items:
+        users_max_items[message.from_user.id] = 10
+        await save_users_max_items()
+    await save_users_max_items()
+    if message.from_user.id not in users_db:
+        await new_user(message)
+    name = message.from_user.full_name
+    if "<" in name or ">" in name:
+        name = name.replace(">", "&gt;").replace("<", "&lt;")
+    users_db[message.from_user.id] = [name, message.from_user.username]
+    await message.answer(LEXICON["/help"])
 
 
 @router.message(Command(commands='list'))
 async def get_list_of_items(message: Message):
+    user_channel_status = await bot.get_chat_member(chat_id=chat_id, user_id=message.from_user.id)
+    if user_channel_status.status == 'left':
+        await message.answer(f'подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом')
+        return
     if message.from_user.id not in users_max_items:
-        users_max_items[message.from_user.id] = 1
+        users_max_items[message.from_user.id] = 10
         await save_users_max_items()
     user_id = message.from_user.id
     if user_id not in users_items or len(users_items[user_id][1]) == 0:
@@ -94,6 +101,11 @@ async def get_list_of_items(message: Message):
             keys.extend(int(key) for key in dictionary.keys())
         for i in keys.copy():
             await main_search(cur, i, user_id)
+    max_itms = users_max_items[user_id]
+    used_itms = len(users_items[user_id][1])
+    await message.answer(f'Всего слотов: {max_itms}\n'
+                             f'Слотов занято: {used_itms}\n'
+                             f'Слотов свободно: {max_itms - used_itms}')
 
 
 
@@ -104,7 +116,11 @@ async def clear_db(message: Message):
 
 @router.message(lambda message: isinstance(message.text, str) and re.match(r'^\s*\d+\s*$', message.text))
 async def add_item_process(message: Message):
-    if message.from_user.id == admin_id:
+        user_channel_status = await bot.get_chat_member(chat_id=chat_id, user_id=message.from_user.id)
+        if user_channel_status.status == 'left':
+            await message.answer(f'подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом')
+            return
+    # if message.from_user.id == admin_id:
         id_ = message.from_user.id
         if id_ not in users_max_items:
             users_max_items[id_] = 1
@@ -119,27 +135,32 @@ async def add_item_process(message: Message):
         if id_ not in users_items:
             await process_start_command(message)
         else:
-            # if len(users_items[id_][1]) < users_max_items[id_]\
-            #         or int(message.text) in users_items[id_][1]:
+            if len(users_items[id_][1]) < users_max_items[id_]\
+                    or int(message.text) in users_items[id_][1]:
                 await main_search(users_items[id_][0], int(message.text), id_)
-            # else:
-            #     bot_info = await bot.get_me()
-            #     bot_username = bot_info.username
-            #     await message.answer(f"{LEXICON['max_items']}\n\n Чтобы увеличить количество отслеживаемых товаров"
-            #                          f" пригласите друга!\nПросто отправьте ему это сообщение с вашей реферальной ссылкой:")
-            #     await message.answer(f"Привет!\n"
-            #                          f"Я хочу поделиться с тобой полезным ботом, который помогает выгодно "
-            #                          f"покупать на Wildberries (он присылает уведомления, "
-            #                          f"когда снижается цена на выбранный тобою товар!)\n\n"
-            #                          f"Чтобы присоединиться просто перейди по ссылке и отправь боту "
-            #                          f"артикул интересующего тебя товара:\n"
-            #                          f"https://t.me/{bot_username}?start={id_}")
-            #     await message.answer(f"https://t.me/{bot_username}?start={id_}")
+            else:
+                bot_info = await bot.get_me()
+                bot_username = bot_info.username
+                await message.answer(f"{LEXICON['max_items']}\n\n Чтобы увеличить количество отслеживаемых товаров"
+                                     f" пригласите друга!\nПросто отправьте ему это сообщение с вашей реферальной ссылкой:")
+                await message.answer(f"Привет!\n"
+                                     f"Я хочу поделиться с тобой полезным ботом, который помогает выгодно "
+                                     f"покупать на Wildberries (он присылает уведомления, "
+                                     f"когда изменяется цена или наличие выбранного товара!)\n\n"
+                                     f"Чтобы присоединиться просто перейди по ссылке и отправь боту "
+                                     f"артикул интересующего тебя товара:\n"
+                                     f"https://t.me/{bot_username}?start={id_}")
+                await message.answer(f"https://t.me/{bot_username}?start={id_}")
+                await message.answer(f"или свжитесь с администратором @fedorov9")
 
 
 @router.message(lambda message: isinstance(message.text, str))
 async def add_many_items_process(message: Message):
-    if message.from_user.id == admin_id:
+        user_channel_status = await bot.get_chat_member(chat_id=chat_id, user_id=message.from_user.id)
+        if user_channel_status.status == 'left':
+            await message.answer(f'подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом')
+            return
+    # if message.from_user.id == admin_id:
         list_of_articles = message.text.split('\n')
         counter = 0
         for art in list_of_articles:
