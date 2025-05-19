@@ -1,3 +1,5 @@
+import asyncio
+
 from aiogram import Router, F
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import re
@@ -42,7 +44,7 @@ async def new_user(message):
 async def process_start_command(message: Message):
         ref_id = await extract_unique_code(message.text)
         if ref_id is not None and int(ref_id) in users_db and message.from_user.id not in users_db:
-            users_max_items[int(ref_id)] += 1
+            users_max_items[int(ref_id)] += 10
             await save_users_max_items()
             await bot.send_message(chat_id=int(ref_id), text=f"Пользователь @{message.from_user.username} "
                                                              f"присоединился по вашему приглашению!\n"
@@ -101,6 +103,7 @@ async def get_list_of_items(message: Message):
             keys.extend(int(key) for key in dictionary.keys())
         for i in keys.copy():
             await main_search(cur, i, user_id)
+            await asyncio.sleep(0.1)
     max_itms = users_max_items[user_id]
     used_itms = len(users_items[user_id][1])
     await message.answer(f'Всего слотов: {max_itms}\n'
@@ -164,6 +167,26 @@ async def add_many_items_process(message: Message):
         list_of_articles = message.text.split('\n')
         counter = 0
         for art in list_of_articles:
+            id_ = message.from_user.id
+            if len(users_items[message.from_user.id][1]) >= users_max_items[message.from_user.id]:
+
+                await message.answer(f'добавлено {counter} товаров')
+
+                bot_info = await bot.get_me()
+                bot_username = bot_info.username
+                await message.answer(f"{LEXICON['max_items']}\n\n Чтобы увеличить количество отслеживаемых товаров"
+                                     f" пригласите друга!\nПросто отправьте ему это сообщение с вашей реферальной ссылкой:")
+                await message.answer(f"Привет!\n"
+                                     f"Я хочу поделиться с тобой полезным ботом, который помогает выгодно "
+                                     f"покупать на Wildberries (он присылает уведомления, "
+                                     f"когда изменяется цена или наличие выбранного товара!)\n\n"
+                                     f"Чтобы присоединиться просто перейди по ссылке и отправь боту "
+                                     f"артикул интересующего тебя товара:\n"
+                                     f"https://t.me/{bot_username}?start={id_}")
+                await message.answer(f"https://t.me/{bot_username}?start={id_}")
+                await message.answer(f"или свжитесь с администратором @fedorov9")
+
+                return
             if re.match(r'^\s*\d+\s*$', art):
                 try:
                     art = art.strip()
@@ -176,10 +199,12 @@ async def add_many_items_process(message: Message):
                     print(f'{art} = {price}, {qty}')
                     if qty == 0:
                         price = 0
+
                     users_items[message.from_user.id][1][int(art)] = int(price)
                     counter += 1
                     await save_users_items()
                 except Exception as err:
                      print(err)
                      await message.answer(f'{art} не найден')
+            await asyncio.sleep(0.1)
         await message.answer(f'добавлено {counter} товаров')

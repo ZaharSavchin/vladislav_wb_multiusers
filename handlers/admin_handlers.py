@@ -108,9 +108,17 @@ async def change_max_items(message: Message):
         else:
             answer = f"{name}(@{username}, {i}, {refs})🤷\n"
 
-        button_plus = InlineKeyboardButton(text='+', callback_data=MaxItemsCallbackFactory(user_id=i, change='+').pack())
-        button_minus = InlineKeyboardButton(text='-', callback_data=MaxItemsCallbackFactory(user_id=i, change='-').pack())
-        markup = InlineKeyboardMarkup(inline_keyboard=[[button_minus, button_plus]])
+        button_plus10 = InlineKeyboardButton(text='+10', callback_data=MaxItemsCallbackFactory(user_id=i, change='+10').pack())
+        button_minus10 = InlineKeyboardButton(text='-10', callback_data=MaxItemsCallbackFactory(user_id=i, change='-10').pack())
+        button_plus100 = InlineKeyboardButton(text='+100', callback_data=MaxItemsCallbackFactory(user_id=i, change='+100').pack())
+        button_minus100 = InlineKeyboardButton(text='-100', callback_data=MaxItemsCallbackFactory(user_id=i, change='-100').pack())
+        button_plus1000 = InlineKeyboardButton(text='+1000', callback_data=MaxItemsCallbackFactory(user_id=i, change='+1000').pack())
+        button_minus1000 = InlineKeyboardButton(text='-1000', callback_data=MaxItemsCallbackFactory(user_id=i, change='-1000').pack())
+        markup = InlineKeyboardMarkup(inline_keyboard=[
+                                                       [button_minus10, button_plus10],
+                                                       [button_minus100, button_plus100],
+                                                       [button_minus1000, button_plus1000]
+                                                       ])
 
         await message.answer(text=answer, reply_markup=markup)
 
