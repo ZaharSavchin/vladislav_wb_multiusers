@@ -84,9 +84,14 @@ async def process_help_command(message: Message):
 
 @router.message(Command(commands='list'))
 async def get_list_of_items(message: Message):
+    user_id = message.from_user.id
     user_channel_status = await bot.get_chat_member(chat_id=chat_id, user_id=message.from_user.id)
     if user_channel_status.status == 'left':
-        await message.answer(f'подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом')
+        button = InlineKeyboardButton(text='Я подписался', callback_data='test_subskr')
+        markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
+        await bot.send_message(chat_id=user_id,
+                               text=f'Подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом',
+                               reply_markup=markup)
         return
     if message.from_user.id not in users_max_items:
         users_max_items[message.from_user.id] = 10
@@ -119,9 +124,14 @@ async def clear_db(message: Message):
 
 @router.message(lambda message: isinstance(message.text, str) and re.match(r'^\s*\d+\s*$', message.text))
 async def add_item_process(message: Message):
+        user_id = message.from_user.id
         user_channel_status = await bot.get_chat_member(chat_id=chat_id, user_id=message.from_user.id)
         if user_channel_status.status == 'left':
-            await message.answer(f'подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом')
+            button = InlineKeyboardButton(text='Я подписался', callback_data='test_subskr')
+            markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
+            await bot.send_message(chat_id=user_id,
+                                   text=f'Подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом',
+                                   reply_markup=markup)
             return
     # if message.from_user.id == admin_id:
         id_ = message.from_user.id
@@ -159,9 +169,14 @@ async def add_item_process(message: Message):
 
 @router.message(lambda message: isinstance(message.text, str))
 async def add_many_items_process(message: Message):
+        user_id = message.from_user.id
         user_channel_status = await bot.get_chat_member(chat_id=chat_id, user_id=message.from_user.id)
         if user_channel_status.status == 'left':
-            await message.answer(f'подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом')
+            button = InlineKeyboardButton(text='Я подписался', callback_data='test_subskr')
+            markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
+            await bot.send_message(chat_id=user_id,
+                               text=f'Подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом',
+                               reply_markup=markup)
             return
     # if message.from_user.id == admin_id:
         list_of_articles = message.text.split('\n')

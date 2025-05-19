@@ -1,9 +1,9 @@
 from aiogram import Router
 from aiogram.filters import Text
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 from database.database import users_items, save_users_items
 
-from config_data.config import Config, load_config
+from config_data.config import Config, load_config, chat_id
 from aiogram import Bot
 
 
@@ -86,3 +86,22 @@ async def process_rub_press(callback: CallbackQuery):
                                                                f"{help_text}")
     await save_users_items()
     await callback.message.delete()
+
+
+@router.callback_query(Text(text='test_subskr'))
+async def process_test_press(callback: CallbackQuery):
+    await callback.answer()
+    user_id = callback.from_user.id
+    user_channel_status = await bot.get_chat_member(chat_id=chat_id, user_id=user_id)
+    if user_channel_status.status == 'left':
+        button = InlineKeyboardButton(text='Я подписался', callback_data='test_subskr')
+        markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
+        await bot.send_message(chat_id=user_id,
+                               text=f'Подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом',
+                               reply_markup=markup)
+        await callback.message.delete()
+        return
+    else:
+        await callback.message.delete()
+        await bot.send_message(chat_id=user_id, text='Спасибо, что подписались! Теперь вы можете использовать функции бота.')
+
