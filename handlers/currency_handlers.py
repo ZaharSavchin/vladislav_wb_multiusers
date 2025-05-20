@@ -97,7 +97,7 @@ async def process_test_press(callback: CallbackQuery):
         button = InlineKeyboardButton(text='Я подписался', callback_data='test_subskr')
         markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
         await bot.send_message(chat_id=user_id,
-                               text=f'Подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом',
+                               text=f'Подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом.',
                                reply_markup=markup)
         await callback.message.delete()
         return

@@ -4,7 +4,7 @@ from environs import Env
 # admin_id = 6031519620
 admin_id = 1042048167
 # admin_id = 237863005
-chat_id = '@wb_cheeck'
+chat_id = 'https://t.me/+Z6ZhNqYQ_SxlNjBi'
 
 @dataclass
 class TgBot:

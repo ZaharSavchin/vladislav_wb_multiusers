@@ -130,7 +130,7 @@ async def add_item_process(message: Message):
             button = InlineKeyboardButton(text='Я подписался', callback_data='test_subskr')
             markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
             await bot.send_message(chat_id=user_id,
-                                   text=f'Подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом',
+                                   text=f'Подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом.',
                                    reply_markup=markup)
             return
     # if message.from_user.id == admin_id:
@@ -154,17 +154,17 @@ async def add_item_process(message: Message):
             else:
                 bot_info = await bot.get_me()
                 bot_username = bot_info.username
-                await message.answer(f"{LEXICON['max_items']}\n\n Чтобы увеличить количество отслеживаемых товаров"
-                                     f" пригласите друга!\nПросто отправьте ему это сообщение с вашей реферальной ссылкой:")
+                await message.answer(f"{LEXICON['max_items']}")
                 await message.answer(f"Привет!\n"
-                                     f"Я хочу поделиться с тобой полезным ботом, который помогает выгодно "
-                                     f"покупать на Wildberries (он присылает уведомления, "
-                                     f"когда изменяется цена или наличие выбранного товара!)\n\n"
+                                     f"Я хочу поделиться с тобой полезным ботом, который помогает отслеживать изменение "
+                                     f"цены и остатков в карточках конкурентов на Wildberries или выгодно покупать "
+                                     f"товары со скидкой (он присылает уведомления, когда изменяется цена или наличие "
+                                     f"выбранного товара!)\n\n"
                                      f"Чтобы присоединиться просто перейди по ссылке и отправь боту "
                                      f"артикул интересующего тебя товара:\n"
                                      f"https://t.me/{bot_username}?start={id_}")
-                await message.answer(f"https://t.me/{bot_username}?start={id_}")
-                await message.answer(f"или свжитесь с администратором @fedorov9")
+                # await message.answer(f"https://t.me/{bot_username}?start={id_}")
+                # await message.answer(f"или свжитесь с администратором @fedorov9")
 
 
 @router.message(lambda message: isinstance(message.text, str))
@@ -175,7 +175,7 @@ async def add_many_items_process(message: Message):
             button = InlineKeyboardButton(text='Я подписался', callback_data='test_subskr')
             markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
             await bot.send_message(chat_id=user_id,
-                               text=f'Подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом',
+                               text=f'Подпишитесь на канал {chat_id} чтобы продолжить пользоваться ботом.',
                                reply_markup=markup)
             return
     # if message.from_user.id == admin_id:
@@ -189,17 +189,15 @@ async def add_many_items_process(message: Message):
 
                 bot_info = await bot.get_me()
                 bot_username = bot_info.username
-                await message.answer(f"{LEXICON['max_items']}\n\n Чтобы увеличить количество отслеживаемых товаров"
-                                     f" пригласите друга!\nПросто отправьте ему это сообщение с вашей реферальной ссылкой:")
+                await message.answer(f"{LEXICON['max_items']}")
                 await message.answer(f"Привет!\n"
-                                     f"Я хочу поделиться с тобой полезным ботом, который помогает выгодно "
-                                     f"покупать на Wildberries (он присылает уведомления, "
-                                     f"когда изменяется цена или наличие выбранного товара!)\n\n"
+                                     f"Я хочу поделиться с тобой полезным ботом, который помогает отслеживать изменение "
+                                     f"цены и остатков в карточках конкурентов на Wildberries или выгодно покупать "
+                                     f"товары со скидкой (он присылает уведомления, когда изменяется цена или наличие "
+                                     f"выбранного товара!)\n\n"
                                      f"Чтобы присоединиться просто перейди по ссылке и отправь боту "
                                      f"артикул интересующего тебя товара:\n"
                                      f"https://t.me/{bot_username}?start={id_}")
-                await message.answer(f"https://t.me/{bot_username}?start={id_}")
-                await message.answer(f"или свжитесь с администратором @fedorov9")
 
                 return
             if re.match(r'^\s*\d+\s*$', art):

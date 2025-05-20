@@ -49,12 +49,12 @@ async def prepare_item(currency, item_id, item_details):
     if len(item_details) > 0:
         price = float(item_details.get('salePriceU', None) / 100) if item_details.get('salePriceU', None) is not None else None
         name = item_details.get('name', None)
-        return (f"артикул: {item_details.get('id', None)}\n"                                                                                                 
-                f"бренд: {item_details.get('brand', None)}\n"
-                f"название: {name}\n"
-                f"цена: {price} {currency} (без учёта Вашей персональной скидки)\n"
-                f"рейтинг: {item_details.get('rating', '0')}⭐ ({item_details.get('feedbacks', '0')} отзывов)\n"
-                f"ссылка: https://www.wildberries.ru/catalog/{item_id}/detail.aspx")
+        return (f"<b>Название:</b> {name}\n"
+                f"<b>Цена:</b> {price} {currency} (без учёта Вашей персональной скидки)\n"                                                                                             
+                f"Бренд: {item_details.get('brand', None)}\n"
+                f"Рейтинг: {item_details.get('rating', '0')}⭐ ({item_details.get('feedbacks', '0')} отзывов)\n"
+                f"Артикул: {item_details.get('id', None)}\n"
+                f"Ссылка: https://www.wildberries.ru/catalog/{item_id}/detail.aspx")
 
 
 async def get_name(currency, item_id):
@@ -137,7 +137,7 @@ async def main_search(currency: str, item_id: int, user_id: int, item_details=No
     await save_users_items()
 
     name = item_details.get('name', None)
-    button = InlineKeyboardButton(text=f"Удалить: '{name}'",
+    button = InlineKeyboardButton(text=f"Удалить: {name}",
                                   callback_data=DeleteCallbackFactory(user_id=user_id,
                                                                       item_id=item_id).pack())
     markup = InlineKeyboardMarkup(inline_keyboard=[[button]])

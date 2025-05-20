@@ -51,7 +51,7 @@ async def monitoring(procent):
                                     sale = price - actual_price
                                     # for id_, user_name in users_db.copy().items():
                                     try:
-                                        await bot.send_message(chat_id=id_, text=f"цена товара '{name}' (Артикул: {item_id})"
+                                        await bot.send_message(chat_id=id_, text=f"Цена товара '{name}' (Артикул: {item_id})"
                                                                                      f" снизилась на {round(sale, 2)} "
                                                                                      f"{list_of_items[0]}")
 
@@ -63,7 +63,7 @@ async def monitoring(procent):
                                     # for id_, user_name in users_db.copy().items():
                                     try:
                                         await bot.send_message(chat_id=id_,
-                                                                   text=f"цена товара '{name}' (Артикул: {item_id})"
+                                                                   text=f"Цена товара '{name}' (Артикул: {item_id})"
                                                                         f" увеличилась на {round(sale, 2)} "
                                                                         f"{list_of_items[0]}")
 
